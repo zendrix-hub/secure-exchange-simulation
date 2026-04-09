@@ -3,15 +3,15 @@ import { ShieldCheck } from 'lucide-react';
 
 export default function Header() {
   return (
-    <header className="text-center mb-10 mt-6">
-      <div className="inline-flex items-center justify-center p-3 bg-sky-500/10 rounded-2xl mb-4 border border-sky-500/20">
-        <ShieldCheck className="w-8 h-8 text-sky-400" />
+    <header className="text-center mb-6 mt-4 flex flex-col items-center">
+      <div className="inline-flex items-center justify-center p-4 bg-green-100 rounded-[24px] rounded-br-[8px] mb-4 text-green-500 shadow-sm border-2 border-green-200">
+        <ShieldCheck className="w-12 h-12" strokeWidth={3} />
       </div>
-      <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-400 mb-4">
-        Secure Exchange Protocol
+      <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4 tracking-tight">
+        Secure Exchange
       </h1>
-      <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-        Automated simulation of Diffie-Hellman key exchange and AES-128 symmetric encryption.
+      <p className="text-gray-500 font-bold max-w-lg mx-auto text-lg leading-relaxed">
+        Let's learn how Diffie-Hellman & AES encryption work together to protect secrets!
       </p>
     </header>
   );

@@ -1,47 +1,64 @@
 import React from 'react';
-import { Cpu, Play, RotateCcw } from 'lucide-react';
+import { Settings, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 
-export default function EnvironmentParams({ params, simState, handleInputChange, startAutoSimulation }) {
+export default function EnvironmentParams({ params, simState, handleInputChange }) {
+  const isReady = params.p && params.g && params.privA && params.privB && params.message;
+
   return (
-    <div className="lg:col-span-12 bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold flex items-center gap-2 text-slate-100">
-          <Cpu className="w-5 h-5 text-indigo-400" /> Environment Parameters
+    <div className="lg:col-span-12 card-duo p-6 md:p-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <h2 className="text-2xl font-extrabold flex items-center gap-3 text-gray-800">
+          <div className="p-2 bg-blue-100 text-blue-500 border-2 border-blue-200 rounded-xl">
+            <Settings className="w-6 h-6" strokeWidth={3} />
+          </div>
+          Environment Rules
         </h2>
-        <div className="flex gap-3">
-          <button
-            onClick={startAutoSimulation}
-            disabled={simState.isSimulating}
-            className="bg-sky-500 hover:bg-sky-400 disabled:bg-slate-700 disabled:text-slate-400 text-white font-semibold py-2 px-6 rounded-lg transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(14,165,233,0.3)] hover:shadow-[0_0_25px_rgba(14,165,233,0.5)] disabled:shadow-none"
-          >
-            {simState.step > 0 && !simState.isSimulating ? <RotateCcw className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            {simState.isSimulating ? "Simulating..." : simState.step > 0 ? "Restart Auth" : "Start Auto-Simulation"}
-          </button>
+
+        <div className={`flex items-center gap-2 px-6 py-3 rounded-2xl border-[3px] font-black tracking-wide ${
+          simState.isSimulating ? 'bg-sky-50 border-sky-200 text-sky-500' : 
+          isReady ? 'bg-green-50 border-green-200 text-green-500' : 'bg-gray-50 border-gray-200 text-gray-400'
+        }`}>
+          {simState.isSimulating ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" strokeWidth={3} />
+              <span>Checking...</span>
+            </>
+          ) : isReady ? (
+            <>
+              <CheckCircle2 className="w-5 h-5" strokeWidth={3} />
+              <span>Perfect!</span>
+            </>
+          ) : (
+            <>
+              <AlertCircle className="w-5 h-5" strokeWidth={3} />
+              <span>Fill blanks</span>
+            </>
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="space-y-2">
-          <label className="text-sm text-slate-400 uppercase tracking-wider font-semibold">Prime Modulus (p)</label>
+        <label className="flex flex-col gap-2">
+          <span className="text-sm font-extrabold text-gray-400 uppercase tracking-widest pl-2">Prime (p)</span>
           <input
             type="number" name="p" value={params.p} onChange={handleInputChange} disabled={simState.isSimulating}
-            className="w-full bg-slate-950/50 border border-slate-700 rounded-lg px-4 py-2.5 text-sky-300 font-mono focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none transition-all disabled:opacity-50"
+            className="input-duo" placeholder="Enter Prime..."
           />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm text-slate-400 uppercase tracking-wider font-semibold">Generator (g)</label>
+        </label>
+        <label className="flex flex-col gap-2">
+          <span className="text-sm font-extrabold text-gray-400 uppercase tracking-widest pl-2">Generator (g)</span>
           <input
             type="number" name="g" value={params.g} onChange={handleInputChange} disabled={simState.isSimulating}
-            className="w-full bg-slate-950/50 border border-slate-700 rounded-lg px-4 py-2.5 text-sky-300 font-mono focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none transition-all disabled:opacity-50"
+            className="input-duo" placeholder="Enter Generator..."
           />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm text-slate-400 uppercase tracking-wider font-semibold">Secret Payload</label>
+        </label>
+        <label className="flex flex-col gap-2">
+          <span className="text-sm font-extrabold text-gray-400 uppercase tracking-widest pl-2">Message</span>
           <input
             type="text" name="message" value={params.message} onChange={handleInputChange} disabled={simState.isSimulating}
-            className="w-full bg-slate-950/50 border border-slate-700 rounded-lg px-4 py-2.5 text-emerald-300 font-mono focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all disabled:opacity-50"
+            className="input-duo" placeholder="Write something secret..."
           />
-        </div>
+        </label>
       </div>
     </div>
   );
