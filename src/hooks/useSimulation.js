@@ -36,19 +36,7 @@ export function useSimulation() {
     setSimState(prev => ({ ...prev, data: { ...prev.data, ...newData } }));
   }, []);
 
-  // --- AUTOMATIC TRIGGER ---
-  useEffect(() => {
-    // Only run if all required data fields are populated
-    if (params.p && params.g && params.privA && params.privB && params.message) {
-      // Debounce: Wait 1 second after the user stops typing before starting
-      const timer = setTimeout(() => {
-        startAutoSimulation();
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [params]);
-
-  const startAutoSimulation = async () => {
+  const startSimulation = async () => {
     const simId = Date.now();
     currentSimRef.current = simId;
     const isActive = () => currentSimRef.current === simId;
@@ -179,7 +167,7 @@ export function useSimulation() {
       if (!isActive()) return; await delay(800);
       addLog(5, `Stripping padding sequence '@'...`);
       if (!isActive()) return; await delay(800);
-      addLog(5, `RECONSTRUCTED MESSAGE: '${finalMessage}'`);
+      addLog(5, `Original Message (Recovered): '${finalMessage}'`);
 
       setSimState(prev => ({ ...prev, step: 6, isSimulating: false }));
 
@@ -191,5 +179,5 @@ export function useSimulation() {
     }
   };
 
-  return { params, simState, handleInputChange, startAutoSimulation };
+  return { params, simState, handleInputChange, startSimulation };
 }

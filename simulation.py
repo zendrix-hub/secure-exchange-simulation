@@ -64,8 +64,12 @@ def main():
     # User A and B Private Keys (Decimal equivalents of ASCII)
     priv_key_A = 57  # ASCII '9'
     priv_key_B = 167 
+    original_message = "The Mandalorian Must Always Recite, This is The Way!"
 
-    print("--- 1. KEY EXCHANGE (Diffie-Hellman) ---")
+    print("\n--- Step 6: Execute Test Case ---")
+    print(f"Using test case: User A={priv_key_A}, User B={priv_key_B}, Message='{original_message}'")
+    
+    print("\n--- Step 1: Implement Diffie-Hellman Key Exchange ---")
     print(f"Prime (p) = {p}, Generator (g) = {g}")
     
     # Calculate Public Values
@@ -84,20 +88,19 @@ def main():
     
     assert shared_key_A == shared_key_B, "Key exchange failed!"
     
-    print("\n--- 2. KEY TRANSFORMATION ---")
+    print("\n--- Step 2: Transform the Shared Key for AES-128 ---")
     aes_key_bytes = transform_to_128bit_key(shared_key_A)
     print(f"Original Shared Key: {shared_key_A}")
     print(f"Transformed 128-bit AES Key (ASCII): {aes_key_bytes.decode('utf-8')}")
     
-    print("\n--- 3. MESSAGE CHUNKING & PADDING ---")
-    original_message = "The Mandalorian Must Always Recite, This is The Way!"
+    print("\n--- Step 3: Process the Message (Chunking and Padding) ---")
     print(f"Original Message ({len(original_message)} chars): '{original_message}'")
     
     sub_messages = chunk_message(original_message)
     for i, sub in enumerate(sub_messages):
         print(f"Sub-message {i+1}: '{sub}' -> Length: {len(sub)}")
         
-    print("\n--- 4. ENCRYPTION (User A Sending) ---")
+    print("\n--- Step 4: Encrypt and Transmit ---")
     # Using ECB mode because we are encrypting each block independently as requested
     cipher_encrypt = AES.new(aes_key_bytes, AES.MODE_ECB)
     
@@ -112,7 +115,7 @@ def main():
     transmitted_payload = b"".join(encrypted_chunks)
     print(f"\nTransmitted Encrypted Payload (Hex): \n{binascii.hexlify(transmitted_payload).decode('utf-8').upper()}")
     
-    print("\n--- 5. DECRYPTION (User B Receiving) ---")
+    print("\n--- Step 5: Decrypt (Receiver Side) ---")
     # Receiver chunks the incoming byte payload into 16-byte blocks
     received_chunks = [transmitted_payload[i:i+16] for i in range(0, len(transmitted_payload), 16)]
     
@@ -124,10 +127,9 @@ def main():
         print(f"Decrypted Sub-message {i+1}: '{decrypted_sub}'")
         decrypted_message += decrypted_sub
         
-    print("\n--- 6. RECONSTRUCTION ---")
     # Strip the padding to get the final message
     final_message = decrypted_message.rstrip('@')
-    print(f"Reconstructed Message (Padding Stripped): '{final_message}'")
+    print(f"Original Message (Recovered): '{final_message}'")
 
 if __name__ == "__main__":
     main()

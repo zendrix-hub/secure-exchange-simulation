@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ShieldCheck, Activity, ArrowRightLeft, Key, FileText, Radio, TerminalSquare } from 'lucide-react';
+import { Play, Key, FileText, Wifi, Unlock, Check } from 'lucide-react';
 
 export default function ExecutionLog({ simState }) {
   const stepRefs = {
@@ -11,61 +11,67 @@ export default function ExecutionLog({ simState }) {
     if (simState.step > 0 && simState.step <= 5) {
       const el = stepRefs[simState.step].current;
       if (el) {
-        // Auto scroll to active step
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   }, [simState.step, simState.logs]);
 
   const steps = [
-    { id: 1, icon: ArrowRightLeft, title: "Diffie-Hellman Key Exchange", color: "sky" },
-    { id: 2, icon: Key, title: "AES-128 Key Transformation", color: "fuchsia" },
-    { id: 3, icon: FileText, title: "Message Chunking & Padding", color: "amber" },
-    { id: 4, icon: Radio, title: "Encryption & Transmission", color: "emerald" },
-    { id: 5, icon: TerminalSquare, title: "Decryption & Reconstruction", color: "indigo" }
+    { id: 1, icon: Play, title: "Step 1: Implement Diffie-Hellman", color: "sky" },
+    { id: 2, icon: Key, title: "Step 2: Transform the Shared Key", color: "purple" },
+    { id: 3, icon: FileText, title: "Step 3: Process the Message", color: "orange" },
+    { id: 4, icon: Wifi, title: "Step 4: Encrypt and Transmit", color: "amber" },
+    { id: 5, icon: Unlock, title: "Step 5: Decrypt (Receiver Side)", color: "green" }
   ];
 
   return (
-    <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 md:p-8 shadow-2xl">
-      <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
-        <Activity className="w-6 h-6 text-sky-400" /> Execution Log
-      </h2>
+    <div className="card" style={{ marginBottom: '4rem', paddingBottom: '4rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+        <h2 className="card-title" style={{ fontSize: '2rem' }}>
+          Learning Path
+        </h2>
+        <p style={{ color: '#9ca3af', fontWeight: 800, marginTop: '0.5rem' }}>Follow the encryption journey</p>
+      </div>
 
-      <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-[2.25rem] md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
-        {steps.map(s => {
+      <div className="path-container">
+        {steps.map((s, idx) => {
           const isActive = simState.step === s.id;
           const isCompleted = simState.step > s.id;
           const hasStarted = simState.step >= s.id;
-          const Icon = s.icon;
+          
+          let circleClass = 'node-waiting';
+          if (isCompleted) circleClass = 'node-completed';
+          else if (isActive) circleClass = `node-active-${s.color}`;
 
-          let ringColor = "border-slate-700 bg-slate-800 text-slate-500";
-          if (isActive) ringColor = `border-${s.color}-500 bg-${s.color}-900/50 text-${s.color}-400 shadow-[0_0_15px_rgba(var(--tw-colors-${s.color}-500),0.5)] animate-pulse`;
-          if (isCompleted) ringColor = `border-${s.color}-500 bg-${s.color}-500 text-white`;
+          const Icon = isCompleted ? Check : s.icon;
+          const isLeft = idx % 2 === 0;
 
           return (
-            <div key={s.id} className={`relative flex items-start group ${!hasStarted ? 'opacity-40' : ''}`} ref={stepRefs[s.id]}>
-              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center shrink-0 z-10 transition-all duration-500 ${ringColor}`}>
-                {isCompleted ? <ShieldCheck className="w-5 h-5 md:w-6 md:h-6" /> : <Icon className="w-5 h-5 md:w-6 md:h-6" />}
-              </div>
-              <div className="ml-4 md:ml-6 flex-1 min-w-0">
-                <h3 className={`text-lg font-bold mb-2 ${isActive ? `text-${s.color}-400` : 'text-slate-200'}`}>
-                  {s.title} {isActive && <span className="inline-block ml-2 w-2 h-2 rounded-full bg-current animate-ping"></span>}
-                </h3>
-
-                <div className={`transition-all duration-500 overflow-hidden rounded-xl border border-slate-700/50 bg-[#0a0f1c] ${hasStarted ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0 border-transparent'}`}>
-                  <div className="p-4 font-mono text-sm terminal-scrollbar overflow-y-auto max-h-60">
-                    {simState.logs[s.id]?.length === 0 && isActive && (
-                      <span className="text-slate-500 italic">Processing payload...</span>
-                    )}
-                    {simState.logs[s.id]?.map((log, i) => (
-                      <div key={i} className="text-slate-300 leading-relaxed break-all flex">
-                        <span className={`text-${s.color}-500 mr-2 select-none`}>❯</span>
-                        <span>{log}</span>
-                      </div>
-                    ))}
-                  </div>
+            <div key={s.id} className={`path-node ${isLeft ? 'path-node-left' : 'path-node-right'}`} ref={stepRefs[s.id]}>
+              {idx < steps.length - 1 && (
+                <div className={`path-line ${isLeft ? 'path-line-left' : 'path-line-right'}`} style={{ backgroundColor: isCompleted ? '#86efac' : '#e5e7eb' }}></div>
+              )}
+              
+              <div className={`tooltip ${isActive ? 'show' : ''}`}>
+                <div className="tooltip-title">{s.title}</div>
+                <div className="tooltip-log">
+                  {simState.logs[s.id]?.length === 0 && <span className="animate-pulse" style={{ display: 'block', textAlign: 'center' }}>Working on it...</span>}
+                  {simState.logs[s.id]?.map((log, i) => (
+                    <div key={i} className="log-item">{log}</div>
+                  ))}
                 </div>
+                <div style={{ position: 'absolute', bottom: '-8px', left: '50%', transform: 'translateX(-50%) rotate(45deg)', width: '16px', height: '16px', backgroundColor: 'white', borderBottom: '2px solid #e5e7eb', borderRight: '2px solid #e5e7eb' }}></div>
               </div>
+
+              <div className={`path-circle ${circleClass} ${isActive ? 'active' : ''}`}>
+                <Icon size={40} strokeWidth={isCompleted ? 4 : 3} />
+              </div>
+              
+              {!isActive && (
+                <div className="path-title" style={{ color: isCompleted ? '#9ca3af' : '#d1d5db' }}>
+                  {s.title}
+                </div>
+              )}
             </div>
           )
         })}

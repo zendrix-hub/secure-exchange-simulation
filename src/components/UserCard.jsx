@@ -6,23 +6,22 @@ export default function UserCard({ role, isActive, paramKey, params, handleInput
   const Icon = isSender ? User : Shield;
   const title = isSender ? 'Alice' : 'Bob';
   
-  const activeBorder = isActive ? 'border-sky-400 shadow-[0_8px_0_rgba(56,189,248,0.2)] transform -translate-y-1' : 'border-gray-200 border-b-[6px]';
-  const headerBg = isSender ? 'bg-orange-100 text-orange-500 border-2 border-orange-200' : 'bg-purple-100 text-purple-500 border-2 border-purple-200';
+  const headerBg = isSender ? 'bg-orange-light text-orange' : 'bg-purple-light text-purple';
   const pubKey = isSender ? simState.data.pubA : simState.data.pubB;
   const sharedKey = isSender ? simState.data.sharedKey : simState.data.sharedB;
 
   return (
-    <div className={`lg:col-span-4 bg-white rounded-3xl border-2 transition-all duration-300 p-6 flex flex-col ${activeBorder}`}>
-      <div className="flex items-center gap-4 mb-6">
-        <div className={`p-4 rounded-[20px] rounded-bl-[6px] ${headerBg}`}>
-          <Icon className="w-8 h-8" strokeWidth={3} />
+    <div className="card user-card" style={isActive ? { borderColor: '#38bdf8', transform: 'translateY(-4px)' } : {}}>
+      <div className="card-header">
+        <div className={`icon-wrapper ${headerBg}`}>
+          <Icon size={32} strokeWidth={3} />
         </div>
-        <h2 className="text-2xl font-black text-gray-800 tracking-tight">{title}</h2>
+        <h2 className="card-title">{title}</h2>
       </div>
       
-      <div className="space-y-6 flex-1">
-        <label className="flex flex-col gap-2">
-          <span className="text-sm font-extrabold text-gray-400 uppercase tracking-widest pl-2">Private Key</span>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <label className="input-label">
+          <span>Private Key</span>
           <input
             type="number" name={paramKey} value={params[paramKey]} onChange={handleInputChange}
             disabled={simState.isSimulating}
@@ -31,18 +30,20 @@ export default function UserCard({ role, isActive, paramKey, params, handleInput
           />
         </label>
 
-        <div className="bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 space-y-3 font-semibold text-gray-600 mt-4 h-full relative overflow-hidden">
-          <div className="flex justify-between items-center bg-white p-3 rounded-xl border-2 border-gray-100">
-             <span className="text-xs text-gray-400 uppercase font-black tracking-widest">Public</span>
-             <span className="text-sky-500 font-black text-lg">{pubKey !== undefined ? pubKey.toString() : '?'}</span>
+        <div className="readonly-container" style={{ marginTop: '1rem' }}>
+          <div className="readonly-row">
+             <span className="readonly-label">Public</span>
+             <span className="readonly-value text-sky">{pubKey !== undefined ? pubKey.toString() : '?'}</span>
           </div>
-          <div className="flex justify-between items-center bg-white p-3 rounded-xl border-2 border-gray-100">
-             <span className="text-xs text-gray-400 uppercase font-black tracking-widest">Shared</span>
-             <span className="text-green-500 font-black text-lg">{sharedKey !== undefined ? sharedKey.toString() : '?'}</span>
+          <div className="readonly-row">
+             <span className="readonly-label">Shared</span>
+             <span className="readonly-value text-green">{sharedKey !== undefined ? sharedKey.toString() : '?'}</span>
           </div>
-          <div className="flex flex-col gap-1 bg-white p-3 rounded-xl border-2 border-gray-100">
-             <span className="text-xs text-gray-400 uppercase font-black tracking-widest text-center mb-1">AES Key</span>
-             <span className="text-purple-500 font-black truncate text-center bg-purple-50 rounded-lg py-1 px-2 border border-purple-100">{simState.data.aesKeyStr || '???'}</span>
+          <div className="readonly-row" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+             <span className="readonly-label" style={{ textAlign: 'center' }}>AES Key</span>
+             <span className="readonly-value text-purple truncate" style={{ fontSize: '0.9rem', textAlign: 'center', backgroundColor: '#f3e8ff', color: '#a855f7', padding: '0.25rem 0.5rem', borderRadius: '8px', border: '1px solid #e9d5ff' }}>
+               {simState.data.aesKeyStr || '???'}
+             </span>
           </div>
         </div>
       </div>
